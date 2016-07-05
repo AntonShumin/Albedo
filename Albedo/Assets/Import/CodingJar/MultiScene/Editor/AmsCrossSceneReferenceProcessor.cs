@@ -207,7 +207,7 @@ namespace CodingJar.MultiScene.Editor
 
 						// Check to make sure it resolved properly
 						if ( xRef.fromProperty.objectReferenceValue != initialObject )
-							throw new ResolveException( string.Format("Resolve should have pointed to {0} ({1}) but instead resolved to {2} ({3})", initialObject, initialObject.GetInstanceID(), xRef.fromProperty.objectReferenceValue, xRef.fromProperty.objectReferenceInstanceIDValue) );
+							throw new ResolveException( string.Format("Resolve should have pointed to {0} ({1}) but instead resolved to {2} ({3})", initialObject ? initialObject.ToString() : "(null)", initialObject ? initialObject.GetInstanceID() : 0, xRef.fromProperty.objectReferenceValue, xRef.fromProperty.objectReferenceInstanceIDValue) );
 					}
 					catch ( System.Exception ex )
 					{

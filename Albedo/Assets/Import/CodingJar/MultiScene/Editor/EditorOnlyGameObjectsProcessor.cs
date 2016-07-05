@@ -10,6 +10,10 @@ public static class EditorOnlyGameObjectsProcessor
 	[UnityEditor.Callbacks.PostProcessScene(-1)]
 	private static void OnPostProcessScene()
 	{
+		// We are not building, so don't delete this stuff (we're in the Editor!)
+		if ( !BuildPipeline.isBuildingPlayer )
+			return;
+
 		GameObject[] allGameObjects = Resources.FindObjectsOfTypeAll<GameObject>();
 		foreach( var gameObject in allGameObjects )
 		{

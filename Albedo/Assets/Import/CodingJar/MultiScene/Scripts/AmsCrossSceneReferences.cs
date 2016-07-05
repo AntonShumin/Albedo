@@ -90,8 +90,12 @@ namespace CodingJar.MultiScene
 		{
 			AmsDebug.Log( this, "{0}.Start() Scene: {1}. IsLoaded: {2}. Path: {3}. Frame: {4}. Root Count: {5}", GetType().Name, gameObject.scene.name, gameObject.scene.isLoaded, gameObject.scene.path, Time.frameCount, gameObject.scene.rootCount );
 
-			// A build might have just been performed, in that case clean-up the leftovers.
-			PerformPostBuildCleanup();
+#if UNITY_EDITOR
+            EditorCheckSceneRename();
+#endif
+
+            // A build might have just been performed, in that case clean-up the leftovers.
+            PerformPostBuildCleanup();
 
 			// For some reason in Awake(), the scene we belong to isn't considered "loaded"?!  We must resolve our cross-scene references here.
 			ResolvePendingCrossSceneReferences();
@@ -283,6 +287,42 @@ namespace CodingJar.MultiScene
 			// we come back from the build.
 			gameObject.scene.GetRootGameObjects( _realSceneRootsForPostBuild  );
 		}
+
+        void EditorCheckSceneRename()
+        {
+            // Did this happen through a rename?
+            if (!Application.isEditor || !gameObject.scene.IsValid() || !gameObject.scene.isLoaded)
+                return;
+
+            // Go through each cross-scene reference and see if any are assigned to the wrong "from scene" (should always be this)
+            for (int i = 0; i < _crossSceneReferences.Count; ++i)
+            {
+                var xRef = _crossSceneReferences[i];
+                if (xRef.fromScene.IsValid() && xRef.fromScene.isLoaded)
+                    continue;
+
+                var oldScene = xRef.fromScene;
+
+                // Re-assign this scene...
+                xRef.fromScene = new AmsSceneReference(gameObject.scene);
+
+                // Now resolve and see if that works...
+                Object obj = xRef.fromObject;
+                if (obj)
+                {
+                    _crossSceneReferences[i] = xRef;
+                    Debug.LogWarningFormat(this, "Fixing up probable cross-scene reference duplication. Old Scene = {0}. New Scene = {1}", oldScene.editorPath, xRef.fromScene.editorPath);
+                    EditorUtility.SetDirty(this);
+
+                    _referencesToResolve.Add(xRef);
+                }
+                else
+                {
+                    // Revert that change
+                    xRef.fromScene = oldScene;
+                }
+            }
+        }
 #endif
 
 	} // class

@@ -55,6 +55,7 @@ namespace CodingJar.MultiScene
 		public	AmsSceneReference	fromScene
 		{
 			get { return _fromObject.scene; }
+            set { _fromObject.scene = value;  }
 		}
 
 		public AmsSceneReference	toScene

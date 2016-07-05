@@ -15,6 +15,16 @@ namespace CodingJar.MultiScene.Editor
 	{
 		static string[] OnWillSaveAssets( string[] filenames )
 		{
+			// Do we have any pending actions? If so, execute them now.
+			// This prevents a ctrl-s spam causing us to lose cross-scene references on second save.
+			if ( EditorApplication.delayCall != null )
+			{
+				var delayCall = EditorApplication.delayCall;
+				EditorApplication.delayCall = null;
+
+				delayCall();
+			}
+
 			// Check if we're saving any scenes
 			List<Scene> savingScenes = new List<Scene>();
 			foreach( var filename in filenames )
