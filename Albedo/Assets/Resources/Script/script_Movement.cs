@@ -18,13 +18,22 @@ public class script_Movement : MonoBehaviour {
     private float m_OriginalPitch;
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
-	    
+        m_Rigidbody = GetComponent<Rigidbody>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    private void OnEnable()
+    {
+        m_Rigidbody.isKinematic = false;
+        m_MovementInputValue = 0f;
+        m_TurnInputValue = 0f;
+    }
+
+    private void OnDisable()
+    {
+        m_Rigidbody.isKinematic = true;
+    }
+
+
 }
