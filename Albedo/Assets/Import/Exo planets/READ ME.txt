@@ -1,0 +1,26 @@
+Thanks for purchasing the Exo-planet pack !
+
+Here are few notes concerning the asset :
+
+- In addition to the original 3D model, there is a low poly and high poly sphere at your disposal
+
+- If you want to change the speed of the clouds, open the shader in a text editor and search for "cloud speed".The default value is 0.005 units/s
+
+- For each planet you have access to :  
+				- 2 Different night cities 
+				- 3 different clouds
+				- 2 different rings
+				- 16 different set of textures
+
+- The size of the planet is by default pretty big, but feel free to downsize them
+
+
+
+
+Changelogs 
+
+- Planets now support point lights 
+- Clouds are occluding cities
+- Can modify the atmosphere to be circular or not
+- Added an ambiant value if you need your planet to match the sky color
+- Added a new shader with transparency if you need your planet to fade into the background
