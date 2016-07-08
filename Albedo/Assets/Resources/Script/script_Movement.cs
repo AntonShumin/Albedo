@@ -35,5 +35,61 @@ public class script_Movement : MonoBehaviour {
         m_Rigidbody.isKinematic = true;
     }
 
+    private void Start()
+    {
+        m_MovementAxisName = "Vertical";
+        m_TurnAxisName = "Horizontal";
+        m_OriginalPitch = m_MovementAudio.pitch;
+    }
+
+    private void Update()
+    {
+        m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
+        m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
+        EngineAudio();
+    }
+
+    private void EngineAudio()
+    {
+        if (Mathf.Abs(m_MovementInputValue) < -0.1f && Mathf.Abs(m_TurnInputValue) < 0.1f)
+        {
+            if (m_MovementAudio.clip == m_EngineDriving)
+            {
+                m_MovementAudio.clip = m_EngineIdling;
+                m_MovementAudio.pitch = Random.Range(m_OriginalPitch - m_PitchRange, m_OriginalPitch + m_PitchRange);
+                m_MovementAudio.Play();
+            }
+        }
+        else
+        {
+            if (m_MovementAudio.clip == m_EngineIdling)
+            {
+                m_MovementAudio.clip = m_EngineDriving;
+                m_MovementAudio.pitch = Random.Range(m_OriginalPitch - m_PitchRange, m_OriginalPitch + m_PitchRange);
+                m_MovementAudio.Play();
+            }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        Move();
+        Turn();
+    }
+
+    private void Move()
+    {
+        Vector3 movement = transform.forward * m_MovementInputValue * m_Speed * Time.deltaTime;
+        m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
+    }
+
+    private void Turn()
+    {
+        float turn = m_TurnInputValue * m_TurnSpeed * Time.deltaTime;
+
+        Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
+        m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
+    }
+
 
 }
