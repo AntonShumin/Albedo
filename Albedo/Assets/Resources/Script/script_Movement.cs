@@ -11,10 +11,14 @@ public class script_Movement : MonoBehaviour {
     public float m_PitchRange = 0.2f;
 
     private string m_MovementAxisName;
-    private string m_TurnAxisName;
+    private string m_TurnAxisXName;
+    private string m_TurnAxisYName;
+    private string m_TurnAxisZName;
     private Rigidbody m_Rigidbody;
     private float m_MovementInputValue;
-    private float m_TurnInputValue;
+    private float m_TurnInputValueX; //pitch
+    private float m_TurnInputValueY; //yaw
+    private float m_TurnInputValueZ; //rot
     private float m_OriginalPitch;
 
 	// Use this for initialization
@@ -27,7 +31,9 @@ public class script_Movement : MonoBehaviour {
     {
         m_Rigidbody.isKinematic = false;
         m_MovementInputValue = 0f;
-        m_TurnInputValue = 0f;
+        m_TurnInputValueX = 0f;
+        m_TurnInputValueY = 0f;
+        m_TurnInputValueZ = 0f;
     }
 
     private void OnDisable()
@@ -38,20 +44,26 @@ public class script_Movement : MonoBehaviour {
     private void Start()
     {
         m_MovementAxisName = "Vertical";
-        m_TurnAxisName = "Horizontal";
+        m_TurnAxisXName = "Pitch";
+        m_TurnAxisYName = "Horizontal";
+        m_TurnAxisZName = "Rotate";
+
         m_OriginalPitch = m_MovementAudio.pitch;
     }
 
     private void Update()
     {
         m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
-        m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
+        m_TurnInputValueX = Input.GetAxis(m_TurnAxisXName);
+        m_TurnInputValueY = Input.GetAxis(m_TurnAxisYName);
+        m_TurnInputValueZ = Input.GetAxis(m_TurnAxisZName);
         EngineAudio();
     }
 
     private void EngineAudio()
     {
-        if (Mathf.Abs(m_MovementInputValue) < -0.1f && Mathf.Abs(m_TurnInputValue) < 0.1f)
+        float total_rotation = Mathf.Abs(m_TurnInputValueX) + Mathf.Abs(m_TurnInputValueY) + Mathf.Abs(m_TurnInputValueZ);
+        if (Mathf.Abs(m_MovementInputValue) < -0.1f && total_rotation < 0.1f)
         {
             if (m_MovementAudio.clip == m_EngineDriving)
             {
@@ -85,9 +97,11 @@ public class script_Movement : MonoBehaviour {
 
     private void Turn()
     {
-        float turn = m_TurnInputValue * m_TurnSpeed * Time.deltaTime;
+        float turnY = m_TurnInputValueY * m_TurnSpeed * Time.deltaTime;
+        float turnX = m_TurnInputValueX * m_TurnSpeed * Time.deltaTime;
+        float turnZ = m_TurnInputValueZ * m_TurnSpeed * Time.deltaTime;
 
-        Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
+        Quaternion turnRotation = Quaternion.Euler(turnX, turnY, turnZ);
         m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
     }
 
